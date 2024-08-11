@@ -5,6 +5,7 @@ import { chatSession } from '@/service/AIModal';
 import React, { useEffect, useState } from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import { toast } from 'sonner';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   Dialog,
   DialogContent,
@@ -16,11 +17,15 @@ import {
 import { FcGoogle } from "react-icons/fc"
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/service/firebaseConfig';
 function CreateTrip() {
   const [place, setPlace] = useState()
 
   const [formData, setFormData] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (name, value) => {
 
@@ -55,7 +60,8 @@ function CreateTrip() {
       toast("Please enter less than 5 days")
       return;
     }
-    console.log(formData);
+    console.log("FormData", formData);
+    setLoading(true);
 
     const FINAL_PROMPT = AI_PROMPT
       .replace('{location}', formData?.location?.label)
@@ -64,11 +70,26 @@ function CreateTrip() {
       .replace('{budget}', formData?.budget)
       .replace('{noOfDays}', formData?.noOfDays)
 
-    console.log('FINAL_PROMPT', FINAL_PROMPT)
+    // console.log('FINAL_PROMPT', FINAL_PROMPT)
 
     const result = await chatSession.sendMessage(FINAL_PROMPT);
 
-    console.log(result?.response?.text())
+    console.log("TripData", result?.response?.text())
+    setLoading(false);
+    SaveAiTrip(result?.response?.text());
+  }
+
+  const SaveAiTrip = async (TripData) => {
+    setLoading(true);
+    const user = JSON.parse(localStorage.getItem('user'));
+    const docId = Date.now().toString();
+    await setDoc(doc(db, "AITrips", docId), {
+      userSelection: formData,
+      tripData: JSON.parse(TripData),
+      userEmail: user?.email,
+      id: docId
+    });
+    setLoading(false);
   }
 
   const GetUserProfile = (tokenInfo) => {
@@ -154,7 +175,13 @@ function CreateTrip() {
         </div>
       </div>
       <div className='my-10 justify-end flex'>
-        <Button onClick={OnGenerateTrip}>Generate trip</Button>
+        <Button
+          disabled={loading}
+          onClick={OnGenerateTrip}>
+          {loading ?
+            <AiOutlineLoading3Quarters className="h-7 w-7 animate-spin" /> : 'Generate Trip'
+          }
+        </Button>
       </div>
 
       <Dialog open={openDialog}>
@@ -167,6 +194,7 @@ function CreateTrip() {
               <p>Sign in to the App with Google authentication securely</p>
 
               <Button
+                disabled={loading}
                 onClick={login}
                 className="w-full mt-5 flex gap-4 items-center">
                 <FcGoogle className='h-7 w-7' />
