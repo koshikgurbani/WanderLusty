@@ -4,7 +4,7 @@ export const SelectTravelesList = [
         title: 'Solo Explorer',
         desc: 'A lone adventurer on the move',
         icon: '✈️',
-        people: '1'
+        people: '1 person'
     },
     {
         id: 2,
@@ -32,7 +32,7 @@ export const SelectTravelesList = [
 export const SelectBudgetOptions = [
     {
         id: 1,
-        title: 'Budget-Friendly',
+        title: 'Cheap',
         desc: 'Keep costs in check',
         icon: '🪙'
     },
@@ -50,4 +50,4 @@ export const SelectBudgetOptions = [
     },
 ]
 
-export const AI_PROMPT = 'Generate Travel Plan for Location: {location}'
+export const AI_PROMPT = 'Generate Travel Plan for Location: {location} for {totalDays} Days for {traveler} with a {budget} budget, Give me  Hotels options list with HotelName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and suggest itinerary with placeName, Place Details, Place Image Url, Geo Coordinates, ticket Pricing, Time to travel each of the location for {noOfDays} days with each day plan with best time to visit in JSON format.'
