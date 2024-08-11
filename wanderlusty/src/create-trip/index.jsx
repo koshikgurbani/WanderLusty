@@ -5,11 +5,22 @@ import { chatSession } from '@/service/AIModal';
 import React, { useEffect, useState } from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import { toast } from 'sonner';
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { FcGoogle } from "react-icons/fc"
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 function CreateTrip() {
   const [place, setPlace] = useState()
 
   const [formData, setFormData] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleInputChange = (name, value) => {
 
@@ -23,7 +34,19 @@ function CreateTrip() {
     console.log(formData);
   }, [formData])
 
+  const login = useGoogleLogin({
+    onSuccess: (codeResp) => GetUserProfile(codeResp),
+    onError: (error) => toast("Failed to login. please Try Again"),
+  })
   const OnGenerateTrip = async () => {
+
+    const user = localStorage.getItem('user');
+
+    if (!user) {
+      setOpenDialog(true);
+      return;
+    }
+
     if (!formData?.noOfDays || !formData?.location || !formData?.budget || !formData.travelers) {
       toast("Please fill all details")
       return;
@@ -46,6 +69,23 @@ function CreateTrip() {
     const result = await chatSession.sendMessage(FINAL_PROMPT);
 
     console.log(result?.response?.text())
+  }
+
+  const GetUserProfile = (tokenInfo) => {
+    console.log('tokenInfo', tokenInfo)
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        Accept: 'Application/json'
+      }
+    }).then((resp) => {
+      localStorage.setItem('user', JSON.stringify(resp.data));
+      setOpenDialog(false);
+      OnGenerateTrip();
+    }).catch((err) => {
+      console.log(".............", err);
+      toast("Failed to fetch user info. Please Login Again")
+    });
   }
 
   return (
@@ -116,6 +156,27 @@ function CreateTrip() {
       <div className='my-10 justify-end flex'>
         <Button onClick={OnGenerateTrip}>Generate trip</Button>
       </div>
+
+      <Dialog open={openDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogDescription>
+              <DialogTitle className="flex justify-center items-center"><img src='/logo.png' className='h-24 w-auto' alt='Logo' /></DialogTitle>
+
+              <h2 className='font-bold text-lg mt-7'>Sign In With Google</h2>
+              <p>Sign in to the App with Google authentication securely</p>
+
+              <Button
+                onClick={login}
+                className="w-full mt-5 flex gap-4 items-center">
+                <FcGoogle className='h-7 w-7' />
+                Sign in With Google
+              </Button>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
     </div>
 
   )
