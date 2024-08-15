@@ -9,7 +9,7 @@ const InfoSection = ({ trip }) => {
 
     const [photoUrl, setPhotoUrl] = useState();
     useEffect(() => {
-        trip && GetPlacePhoto();
+        trip&&GetPlacePhoto();
     }, [trip])
     const GetPlacePhoto = async () => {
         const data = {

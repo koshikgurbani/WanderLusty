@@ -33,7 +33,7 @@ function ViewTrip() {
     }
   }
 
-  console.log("trip", trip);
+  // console.log("trip", trip);
   return (
     <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
       {/* Information Section */}
