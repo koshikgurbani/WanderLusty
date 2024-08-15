@@ -9,7 +9,7 @@ const InfoSection = ({ trip }) => {
 
     const [photoUrl, setPhotoUrl] = useState();
     useEffect(() => {
-        trip&&GetPlacePhoto();
+        trip && GetPlacePhoto();
     }, [trip])
     const GetPlacePhoto = async () => {
         const data = {
@@ -27,7 +27,7 @@ const InfoSection = ({ trip }) => {
 
     return (
         <div>
-            <img src={photoUrl ? photoUrl : '/logo.png'} className='h-[300px] w-full object-cover rounded-xl' />
+            <img src={photoUrl ? photoUrl : '/logo.png'} className="flex justify-center items-center h-[300px] sm:h-[350px] md:h-[400px] lg:h-[500px] w-full overflow-hidden rounded-xl" />
 
             <div className='flex justify-between items-center'>
                 <div className='my-5 flex flex-col gap-2'>
