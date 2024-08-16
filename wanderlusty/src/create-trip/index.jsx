@@ -39,11 +39,11 @@ function CreateTrip() {
   }
 
   useEffect(() => {
-    console.log(formData);
+    // console.log("formData",formData);
   }, [formData])
 
   const login = useGoogleLogin({
-    onSuccess: (codeResp) => GetUserProfile(codeResp),
+    onSuccess: (codeResp) => {toast("Logged in Successfully"); GetUserProfile(codeResp)},
     onError: (error) => toast("Failed to login. please Try Again"),
   })
   const OnGenerateTrip = async () => {
@@ -75,6 +75,7 @@ function CreateTrip() {
 
     // console.log('FINAL_PROMPT', FINAL_PROMPT)
 
+    toast("Please Wait... We are working on it...")
     const result = await chatSession.sendMessage(FINAL_PROMPT);
 
     console.log("TripData", result?.response?.text())
@@ -97,7 +98,7 @@ function CreateTrip() {
   }
 
   const GetUserProfile = (tokenInfo) => {
-    console.log('tokenInfo', tokenInfo)
+    // console.log('tokenInfo', tokenInfo)
     axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
       headers: {
         Authorization: `Bearer ${tokenInfo?.access_token}`,
@@ -194,7 +195,7 @@ function CreateTrip() {
             <DialogDescription>
               <DialogTitle className="flex justify-center items-center"><img src='/logo.png' className='h-24 w-auto' alt='Logo' /></DialogTitle>
 
-              <h2 className='font-bold text-lg mt-7'>Sign In With Google</h2>
+              <h2 className='font-bold text-lg mt-7'>Sign in With Google</h2>
               <p>Sign in to the App with Google authentication securely</p>
 
               <Button
