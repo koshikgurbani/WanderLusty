@@ -25,7 +25,7 @@ function Header() {
     const [openDialog, setOpenDialog] = useState(false);
 
     useEffect(() => {
-        // console.log('user', user)
+        console.log('user', user)
     }, [])
 
     const login = useGoogleLogin({
